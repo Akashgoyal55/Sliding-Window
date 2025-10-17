@@ -1,0 +1,60 @@
+import java.util.HashMap;
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+
+        // HashMap to store each character and its frequency in the current window
+        HashMap<Character, Integer> map = new HashMap<>();
+
+        // Variable to keep track of the maximum length of substring found so far
+        int maxString = 0;
+
+        // Two pointers (window boundaries)
+        int i = 0;  // start of the window
+        int j = 0;  // end of the window
+
+        // Expand the window until the right end (j) reaches the end of the string
+        while (j < s.length()) {
+
+            // Step 1: Add the current character to the map (or increase its count)
+            char c = s.charAt(j);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+
+            // Step 2: If the size of the map equals the window length,
+            // that means all characters are unique (no duplicates yet)
+            if (map.size() == j - i + 1) {
+                // Update max length if current window is larger
+                maxString = Math.max(maxString, j - i + 1);
+            }
+
+            // Step 3: If map size < window length → duplicate exists
+            // We must shrink the window from the left side until all characters are unique again
+            if (map.size() < j - i + 1) {
+
+                // Shrink window until it's valid (all unique chars)
+                while (map.size() < j - i + 1) {
+
+                    // Character at the left pointer
+                    char left = s.charAt(i);
+
+                    // Decrease its count (since we're removing it from the window)
+                    map.put(left, map.getOrDefault(left, 0) - 1);
+
+                    // If its count becomes 0, completely remove it from the map
+                    if (map.get(left) == 0) {
+                        map.remove(left);
+                    }
+
+                    // Move the left pointer ahead (shrink window)
+                    i++;
+                }
+            }
+
+            // Step 4: Move right pointer forward (expand window)
+            j++;
+        }
+
+        // Return the length of the longest substring without repeating characters
+        return maxString;
+    }
+}
